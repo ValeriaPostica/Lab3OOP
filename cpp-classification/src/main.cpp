@@ -1,73 +1,38 @@
 #include <iostream>
-#include <fstream>
-#include "../include/nlohmann/json.hpp"
-#include <vector>
-#include <string>
+#include "FileReader.h"
 
-using json = nlohmann::json;
 using namespace std;
-
-class Universe {
-private:
-    string name;
-    vector<json> individuals;
-public:
-    Universe(const string& name) : name(name) {}
-    void setIndividuals(json individual){
-        individuals.push_back(individual);
-    }
-    auto getIndividuals(){
-        return individuals;
-    }
-
-    string getName(){
-        return name;
-    }
-};
+using json = nlohmann::json;
 
 int main() {
-    ifstream inputFile("../resources/test-input.json");
-    if (!inputFile) {
-        cerr << "Error: Could not open the input file!" << endl;
+    cout << "FILE READING AND JSON PARSING" << endl;
+    
+    try {
+        cout << "\nTEST 1: Reading file and printing raw JSON"<<endl;
+        FileReader reader("cpp-classification/resources/test-input.json");
+        auto jsonData = reader.readFile();
+        reader.printJsonToConsole(jsonData);
+
+        cout << "\nTEST 2: Printing each JSON object separately" << endl;
+        reader.printEachObjectSeparately(jsonData);
+
+        cout << "\nTEST 3: Exploring JSON structure" << endl;
+        if (jsonData.contains("data") && jsonData["data"].is_array()) {
+            cout << "Found 'data' array with " << jsonData["data"].size() << " elements" << endl;
+            
+            //access first element's properties
+            if (!jsonData["data"].empty()) {
+                auto firstEntry = jsonData["data"][0];
+                cout << "First entry ID: " << firstEntry.value("id", -1) << endl;
+                cout << "First entry planet: " << firstEntry.value("planet", "unknown") << endl;
+            }
+        }
+        
+    } catch (const exception& e) {
+        cerr << "ERROR: " << e.what() << endl;
         return 1;
     }
-
-    json inputJson;
-    inputFile >> inputJson;
-    json data = inputJson["data"];
     
-    Universe starWars("star-wars");
-    Universe hitchhikers("hitch-hiker");
-    Universe marvel("marvel");
-    Universe rings("rings");
-
-    string userInput;
-    for (const auto& entry : data) {
-        cout << entry.dump() << endl; 
-        cin >> userInput;
-
-        if (userInput == "1") {
-            starWars.setIndividuals(entry);
-        } else if (userInput == "2") {
-            hitchhikers.setIndividuals(entry);
-        } else if (userInput == "3") {
-            marvel.setIndividuals(entry);
-        } else if (userInput == "4") {
-            rings.setIndividuals(entry);
-        } else {
-            cout << "Invalid input" << endl;
-        }
-    }
-
-    ofstream outStarWars("../resources/output/star-wars.json");
-    ofstream outHitchhikers("../resources/output/hitch-hiker.json");
-    ofstream outMarvel("../resources/output/marvel.json");
-    ofstream outRings("../resources/output/rings.json");
-    outStarWars << json({{"name", starWars.getName()}, {"individuals", starWars.getIndividuals()}}).dump(4);
-    outHitchhikers << json({{"name", hitchhikers.getName()}, {"individuals", hitchhikers.getIndividuals()}}).dump(4);
-    outMarvel << json({{"name", marvel.getName()}, {"individuals", marvel.getIndividuals()}}).dump(4);
-    outRings << json({{"name", rings.getName()}, {"individuals", rings.getIndividuals()}}).dump(4);
-
-    cout << "Success! Files have been written." << endl;
+    cout << "\nTESTING COMPLETED SUCCESSFULLY" << endl;
     return 0;
 }
