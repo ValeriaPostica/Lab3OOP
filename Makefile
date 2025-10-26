@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Isrc
 
 # Source files
-SOURCES = cpp-classification/src/main.cpp  cpp-classification/src/FileReader.cpp
+SOURCES = cpp-classification/src/main.cpp cpp-classification/src/FileReader.cpp cpp-classification/src/Individual.cpp
 
 # Target executable
 TARGET = classifier
