@@ -2,6 +2,7 @@
 #include <vector>
 #include "FileReader.h"
 #include "Individual.h"
+#include "Universe.h"
 
 using namespace std;
 
@@ -43,7 +44,7 @@ int main() {
 
 
     //day3
-    cout << "JSON TO CLASSES MAPPING" << endl;
+ /*   cout << "JSON TO CLASSES MAPPING" << endl;
     
     try {
         FileReader reader("cpp-classification/resources/input.json");
@@ -111,6 +112,103 @@ int main() {
         return 1;
     }
     
-    cout << "\nMAPPING AND EXPERIMENTATION COMPLETE" << endl;
+    cout << "\nMAPPING AND EXPERIMENTATION COMPLETE" << endl; */
+
+
+
+
+
+   //day4
+    cout << "RULE-BASED CLASSIFICATION SYSTEM" << endl;
+    
+    try {
+        FileReader reader("cpp-classification/resources/input.json");
+        auto jsonData = reader.readFile();
+        
+        json dataArray;
+        if (jsonData.is_array()) {
+            dataArray = jsonData;  
+        } else if (jsonData.contains("data") && jsonData["data"].is_array()) {
+            dataArray = jsonData["data"];  
+        } else {
+            throw std::runtime_error("Invalid JSON structure: expected array or object with 'data' array");
+        }
+        
+        // Create universes
+        Universe starWars("star-wars");
+        Universe hitchhikers("hitch-hiker");
+        Universe marvel("marvel");
+        Universe rings("rings");
+        Universe undefined("undefined");
+        
+        vector<Individual> individuals;
+        
+        cout << "\nCLASSIFICATION RESULTS" << endl;
+        
+        for (const auto& entry : dataArray) {
+            Individual individual(entry);
+            individuals.push_back(individual);
+            
+            string classification = individual.classify();
+            
+            cout << "ID " << setw(2) << individual.getId() << " -> " << classification;
+            
+            // Show reasoning for undefined cases
+            if (classification == "undefined") {
+                cout << " (";
+                if (!individual.hasPlanet()) cout << "no planet ";
+                if (individual.getPhysicalTraits().empty()) cout << "no traits ";
+                if (!individual.hasAge()) cout << "no age";
+                cout << ")";
+            }
+            cout << endl;
+            
+            // Add to universe
+            if (classification == "star-wars") {
+                starWars.addIndividual(entry);
+            } else if (classification == "hitch-hiker") {
+                hitchhikers.addIndividual(entry);
+            } else if (classification == "marvel") {
+                marvel.addIndividual(entry);
+            } else if (classification == "rings") {
+                rings.addIndividual(entry);
+            } else {
+                undefined.addIndividual(entry);
+            }
+        }
+        
+        cout << "\nFINAL CLASSIFICATION SUMMARY" << endl;
+        cout << "Star Wars:       " << starWars.getCount() << " individuals" << endl;
+        cout << "Hitchhiker's:    " << hitchhikers.getCount() << " individuals" << endl;
+        cout << "Marvel:          " << marvel.getCount() << " individuals" << endl;
+        cout << "Lord of the Rings: " << rings.getCount() << " individuals" << endl;
+        cout << "Undefined:       " << undefined.getCount() << " individuals" << endl;
+        
+        cout << "\nSUCCESSFUL CLASSIFICATION EXAMPLES" << endl;
+        int examplesShown = 0;
+        for (const auto& individual : individuals) {
+            string classification = individual.classify();
+            if (classification != "undefined" && examplesShown < 5) {
+                cout << "ID " << individual.getId() << ": " << classification;
+                cout << " - " << (individual.getIsHumanoid() ? "Humanoid" : "Non-humanoid");
+                if (individual.hasPlanet()) cout << " from " << individual.getOriginPlanet();
+                if (!individual.getPhysicalTraits().empty()) {
+                    cout << " with traits: ";
+                    for (const auto& trait : individual.getPhysicalTraits()) {
+                        cout << trait << " ";
+                    }
+                }
+                cout << endl;
+                examplesShown++;
+            }
+        }
+        
+    } catch (const exception& e) {
+        cerr << "ERROR: " << e.what() << endl;
+        return 1;
+    }
+    
+    cout << "\nRULE-BASED CLASSIFICATION COMPLETE" << endl;
+    
     return 0;
 }

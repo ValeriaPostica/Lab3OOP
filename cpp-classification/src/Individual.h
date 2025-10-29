@@ -6,7 +6,6 @@
 #include "../include/nlohmann/json.hpp"
 
 using namespace std;
-using json = nlohmann::json;
 
 class Individual {
 private:
@@ -17,16 +16,23 @@ private:
     vector<string> physicalTraits;
 
 public:
-    Individual(const json& entry);
+    Individual(const nlohmann::json& entry);
     
-    //getters
+    // Getters
     int getId() const;
     bool getIsHumanoid() const;
     string getOriginPlanet() const;
     int getAge() const;
     vector<string> getPhysicalTraits() const;
     
-    //display method
+    // Helper methods
+    bool hasTrait(const string& trait) const;
+    bool hasPlanet() const;
+    bool hasAge() const;
+    bool hasHumanoidInfo() const;
+    
+    string classify() const;
+    
     void printInfo() const;
 };
 

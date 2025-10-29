@@ -1,9 +1,9 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Isrc
+CXXFLAGS = -std=c++17 -Wall -Isrc
 
 # Source files
-SOURCES = cpp-classification/src/main.cpp cpp-classification/src/FileReader.cpp cpp-classification/src/Individual.cpp
+SOURCES = cpp-classification/src/main.cpp cpp-classification/src/FileReader.cpp cpp-classification/src/Individual.cpp cpp-classification/src/Universe.cpp
 
 # Target executable
 TARGET = classifier
